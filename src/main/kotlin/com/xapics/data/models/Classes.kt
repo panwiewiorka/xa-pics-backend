@@ -2,15 +2,12 @@ package com.xapics.data.models
 
 import kotlinx.serialization.Serializable
 
-data class Pic(   // TODO delete?
-    val year: Int,
-    val description: String,
-    val imageUrl: String
-)
+const val BASE_URL = "http://192.168.0.87:8080"
+
 
 @Serializable
 data class Film(
-    val name: String = "",
+    val filmName: String = "",
     val iso: Int? = null,
     val type: FilmType = FilmType.NULL,
     val xpro: Boolean = false,
@@ -20,7 +17,7 @@ data class Film(
 @Serializable
 data class Roll(
     val title: String,
-    val film: Film,
+    val film: String,
 //    val date: Date,
     val nonXa: Boolean = false,
 )

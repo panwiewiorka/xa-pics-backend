@@ -1,22 +1,22 @@
 package com.xapics.routes
 
 import com.xapics.data.PicsDao
+import com.xapics.data.models.BASE_URL
 import com.xapics.data.models.FilmPic
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-const val BASE_URL = "http://192.168.0.87:8080"
-
 fun Route.getPicsList(
     picsDaoImpl: PicsDao
 ) {
-    get("/picslist") {
+    get("picslist") {
         val year = call.request.queryParameters["year"]?.toInt()
+        val roll = call.request.queryParameters["roll"]
         val film = call.request.queryParameters["film"]
 
-        if (year == null && film.isNullOrBlank()) {
+        if (year == null && roll.isNullOrBlank() && film.isNullOrBlank()) {
             call.respond(
                 HttpStatusCode.OK,
                 listOf(FilmPic(0, "NULL", "$BASE_URL/pics/null.jpg", ""))
@@ -24,7 +24,7 @@ fun Route.getPicsList(
         } else {
             call.respond(
                 HttpStatusCode.OK,
-                picsDaoImpl.getFilmPicsList(year, film)
+                picsDaoImpl.getFilmPicsList(year, roll, film)
             )
         }
     }

@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
 object Films : IntIdTable() {
-    val name = varchar("name", 255)
+    val filmName = varchar("filmName", 255)
     val iso = integer("iso")
     val type = enumeration<FilmType>("type")
     val xpro = bool("xpro")
@@ -16,25 +16,30 @@ object Films : IntIdTable() {
 
 class FilmEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<FilmEntity>(Films)
-    var name by Films.name
+    var filmName by Films.filmName
     var iso by Films.iso
     var type by Films.type
     var xpro by Films.xpro
     var expired by Films.expired
+    val rolls by RollEntity referrersOn Rolls.film
 }
 
 
 object Rolls : IntIdTable() {
+    val index = integer("index").uniqueIndex()
     val title = varchar("title", 255)
-    val film = varchar("film", 255)
     val path = varchar("path", 255)
+    val film = reference("film", Films)
+    val nonxa = bool("nonXA")
 }
 
 class RollEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<RollEntity>(Rolls)
+    var index by Rolls.index
     var title by Rolls.title
-    var film by Rolls.film
     var path by Rolls.path
+    var film by FilmEntity referencedOn Rolls.film
+    var nonXa by Rolls.nonxa
     val frames by PicEntity referrersOn Pics.roll
 }
 

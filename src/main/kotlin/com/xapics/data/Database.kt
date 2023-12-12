@@ -1,7 +1,7 @@
 package com.xapics.data
 
+import com.xapics.data.models.BASE_URL
 import com.xapics.data.models.FilmType
-import com.xapics.routes.BASE_URL
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -29,92 +29,96 @@ object DatabaseFactory {
             PicEntity.all().forEach{ it.delete() }
             RollEntity.all().forEach{ it.delete() }
 
-            FilmEntity.new {
-                name = "Aerocolor"
+            val aeroFilm = FilmEntity.new {
+                filmName = "Aerocolor"
                 iso = 125
                 type = FilmType.NEGATIVE
                 xpro = false
                 expired = false
             }
-            FilmEntity.new {
-                name = "Ektachrome"
+            val ektaFilm = FilmEntity.new {
+                filmName = "Ektachrome"
                 iso = 100
                 type = FilmType.SLIDE
                 xpro = false
                 expired = false
             }
 
-            val ekta = RollEntity.new {
+            val ektaRoll = RollEntity.new {
+                index = 1
                 title = "Ekta"
-                film = "Ektachrome"
-                path = "$BASE_URL/pics/09ektachrome"
+                film = ektaFilm
+                path = "$BASE_URL/rolls/01-Ektachrome-Ekta"//"$BASE_URL/pics/09ektachrome"
+                nonXa = false
             }
-            val aero = RollEntity.new {
+            val aeroRoll = RollEntity.new {
+                index = 2
                 title = "Aero"
-                film = "Aerocolor"
-                path = "$BASE_URL/pics/01aerocolor"
+                film = aeroFilm
+                path = "$BASE_URL/rolls/02-Aerocolor-Aero"//"$BASE_URL/pics/01aerocolor"
+                nonXa = false
             }
 
             PicEntity.new {
                 year = 2023
                 description = "House gate"
                 imageUrl = "$BASE_URL/pics/09ektachrome/01.jpg"
-                roll = ekta
+                roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Bench, house"
                 imageUrl = "$BASE_URL/pics/09ektachrome/02.jpg"
-                roll = ekta
+                roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Girls"
                 imageUrl = "$BASE_URL/pics/09ektachrome/03.jpg"
-                roll = ekta
+                roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Junk"
                 imageUrl = "$BASE_URL/pics/09ektachrome/04.jpg"
-                roll = ekta
+                roll = ektaRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Curtain"
                 imageUrl = "$BASE_URL/pics/09ektachrome/05.jpg"
-                roll = ekta
+                roll = ektaRoll
             }
 
             PicEntity.new {
                 year = 2020
                 description = "Sunset river, city"
                 imageUrl = "$BASE_URL/pics/01aerocolor/01.jpg"
-                roll = aero
+                roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "Man on a wheelchair, night, people"
                 imageUrl = "$BASE_URL/pics/01aerocolor/02.jpg"
-                roll = aero
+                roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "People in lecture room"
                 imageUrl = "$BASE_URL/pics/01aerocolor/03.jpg"
-                roll = aero
+                roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "People in lecture room, concert, music"
                 imageUrl = "$BASE_URL/pics/01aerocolor/04.jpg"
-                roll = aero
+                roll = aeroRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Self portrait"
                 imageUrl = "$BASE_URL/pics/01aerocolor/05.jpg"
-                roll = aero
+                roll = aeroRoll
             }
         }
     }
