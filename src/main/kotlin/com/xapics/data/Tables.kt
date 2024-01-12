@@ -6,6 +6,34 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
+object Users: IntIdTable() {
+    val username = varchar("username", 50)
+    val password =  varchar("password", 255)
+    val salt = varchar("salt", 255)
+}
+
+class UserEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserEntity>(Users)
+    var username by Users.username
+    var password by Users.password
+    var salt by Users.salt
+}
+
+
+object Collections: IntIdTable() {
+    val userId = integer("userId")
+    val title = varchar("collection", 255)
+    val pic = reference("pic", Pics)
+}
+
+class CollectionEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<CollectionEntity>(Collections)
+    var userId by Collections.userId
+    var title by Collections.title
+    var pic by PicEntity referencedOn Collections.pic
+}
+
+
 object Films : IntIdTable() {
     val filmName = varchar("filmName", 255)
     val iso = integer("iso")
@@ -48,6 +76,7 @@ object Pics : IntIdTable() {
     val year = integer("year")
     val description = varchar("description", 255)
     val imageUrl = varchar("imageUrl", 255)
+    val tags = varchar("tags", 255)
     val roll = reference("roll", Rolls)
 }
 
@@ -56,5 +85,6 @@ class PicEntity(id: EntityID<Int>) : IntEntity(id) {
     var year by Pics.year
     var description by Pics.description
     var imageUrl by Pics.imageUrl
+    var tags by Pics.tags
     var roll by RollEntity referencedOn Pics.roll
 }

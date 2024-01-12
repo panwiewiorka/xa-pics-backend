@@ -19,7 +19,7 @@ object DatabaseFactory {
         Database.connect(jdbcURL, driverClassName)
 
         transaction {
-            SchemaUtils.create(Films, Rolls, Pics)
+            SchemaUtils.create(Users, Films, Rolls, Pics, Collections)
 //            SchemaUtils.createMissingTablesAndColumns(Users)
 
             // print sql to std-out
@@ -63,30 +63,35 @@ object DatabaseFactory {
                 year = 2023
                 description = "House gate"
                 imageUrl = "$BASE_URL/pics/09ektachrome/01.jpg"
+                tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Bench, house"
                 imageUrl = "$BASE_URL/pics/09ektachrome/02.jpg"
+                tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Girls"
                 imageUrl = "$BASE_URL/pics/09ektachrome/03.jpg"
+                tags = "Caucasus, people"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Junk"
                 imageUrl = "$BASE_URL/pics/09ektachrome/04.jpg"
+                tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Curtain"
                 imageUrl = "$BASE_URL/pics/09ektachrome/05.jpg"
+                tags = "Caucasus"
                 roll = ektaRoll
             }
 
@@ -94,30 +99,35 @@ object DatabaseFactory {
                 year = 2020
                 description = "Sunset river, city"
                 imageUrl = "$BASE_URL/pics/01aerocolor/01.jpg"
+                tags = "Poland, city"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
-                description = "Man on a wheelchair, night, people"
+                description = "Man on a wheelchair"
                 imageUrl = "$BASE_URL/pics/01aerocolor/02.jpg"
+                tags = "Poland, people, night"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "People in lecture room"
                 imageUrl = "$BASE_URL/pics/01aerocolor/03.jpg"
+                tags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
-                description = "People in lecture room, concert, music"
+                description = "Music concert in lecture room"
                 imageUrl = "$BASE_URL/pics/01aerocolor/04.jpg"
+                tags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2021
-                description = "Self portrait"
+                description = "Self-portrait"
                 imageUrl = "$BASE_URL/pics/01aerocolor/05.jpg"
+                tags = "Poland, people, self-portrait"
                 roll = aeroRoll
             }
         }

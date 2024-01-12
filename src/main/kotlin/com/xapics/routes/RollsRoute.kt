@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory
 import java.lang.String
 
 fun Route.rolls(
-    picsDaoImpl: PicsDao
+    picsDao: PicsDao
 ) {
     get("rolls") {
         call.respond(
             HttpStatusCode.OK,
-            picsDaoImpl.getRollsList()
+            picsDao.getRollsList()
         )
     }
 
@@ -26,8 +26,8 @@ fun Route.rolls(
 
     post("rolls") {
         val roll = call.receiveParameters()
-        log.debug("roll title = ${roll["title"]}")
-        log.debug("roll film = ${roll["film"]}")
+//        log.debug("roll title = ${roll["title"]}")
+//        log.debug("roll film = ${roll["film"]}")
         transaction {
             val filmEntity = FilmEntity.find { Films.filmName eq (roll["film"] ?: "nullFilm") }.first() // TODO firstOrNull ?
             val rollTitle = roll["title"] ?: "nullRoll" // TODO filter spaces and other special symbols (FOR PATH ONLY)
