@@ -15,6 +15,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val baseUrl = environment.config.property("jwt.domain").getString()
+
     DatabaseFactory.init()
 
     val userDataSource by inject<UserDataSource>()
@@ -27,11 +29,10 @@ fun Application.module() {
         secret = environment.config.property("jwt.secret").getString(),
     )
     val hashingService = SHA256HashingService()
-//    val BASE_URL = environment.config.property("jwt.domain").getString()
 
     configureSerialization()
     configureMonitoring()
     configureKoin()
     configureSecurity(tokenConfig)
-    configureRouting(userDataSource, hashingService, tokenService, tokenConfig)
+    configureRouting(userDataSource, hashingService, tokenService, tokenConfig, baseUrl)
 }

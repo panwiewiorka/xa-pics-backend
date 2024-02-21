@@ -10,15 +10,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.slf4j.LoggerFactory
 
-fun Route.collections(picsDao: PicsDao) {
+fun Route.collections(picsDao: PicsDao, baseUrl: String) {
     authenticate {
 
         val log = LoggerFactory.getLogger(this.javaClass)
-
-        fun getUserId(call: ApplicationCall): Int? {
-            val principal = call.principal<JWTPrincipal>()
-            return principal?.getClaim("userId", String::class)?.toInt()
-        }
 
         get("pic-collections") {
             val principal = call.principal<JWTPrincipal>()
@@ -35,20 +30,12 @@ fun Route.collections(picsDao: PicsDao) {
         get("all-collections") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
-//            log.debug("userIDff = $userId")
-//            log.debug("lambda = ${picsDao.getCollectionThumbs(userId!!)}")
+            log.debug("userIDff = $userId")
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getAllCollections(userId!!)
+                picsDao.getAllCollections(userId!!, baseUrl)
             )
         }
-
-//        post("collections") {
-////            getUserId(call)
-//            val title = call.receiveParameters()["title"]
-//            picsDao.createCollection(getUserId(call)!!, title!!)
-//            call.respond(HttpStatusCode.Created)
-//        }
 
         get("collection") {
             val principal = call.principal<JWTPrincipal>()
@@ -56,7 +43,7 @@ fun Route.collections(picsDao: PicsDao) {
             val collection = call.request.queryParameters["collection"]
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getCollection(userId!!, collection!!)
+                picsDao.getCollection(userId!!, collection!!, baseUrl)
             )
         }
 
@@ -65,6 +52,14 @@ fun Route.collections(picsDao: PicsDao) {
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             val parameters = call.receiveParameters()
             picsDao.editCollection(userId!!, parameters["collection"], parameters["picId"]?.toInt())
+            call.respond(HttpStatusCode.Accepted)
+        }
+
+        post("rename-delete-collection") {
+            val principal = call.principal<JWTPrincipal>()
+            val userId = principal?.getClaim("userId", String::class)?.toInt()
+            val parameters = call.receiveParameters()
+            picsDao.renameOrDeleteCollection(userId!!, parameters["collectionTitle"] ?: "", parameters["renamedTitle"])
             call.respond(HttpStatusCode.Accepted)
         }
     }

@@ -7,15 +7,17 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.picsList(
-    picsDao: PicsDao
+    picsDao: PicsDao,
+    baseUrl: String
 ) {
     get("picslist") {
         val year = call.request.queryParameters["year"]?.toInt()
         val roll = call.request.queryParameters["roll"]
         val tag = call.request.queryParameters["tag"]
         val film = call.request.queryParameters["film"]
+        val description = call.request.queryParameters["description"]
 
-        if (year == null && roll.isNullOrBlank() && tag.isNullOrBlank() && film.isNullOrBlank()) {
+        if (year == null && roll.isNullOrBlank() && tag.isNullOrBlank() && film.isNullOrBlank() && description.isNullOrBlank()) {
             call.respond(
                 HttpStatusCode.BadRequest
 //                HttpStatusCode.OK,
@@ -24,7 +26,7 @@ fun Route.picsList(
         } else {
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getPicsList(year, roll, tag, film)
+                picsDao.getPicsList(year, roll, tag, film, description, baseUrl)
             )
         }
     }

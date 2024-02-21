@@ -38,8 +38,6 @@ object Films : IntIdTable() {
     val filmName = varchar("filmName", 255)
     val iso = integer("iso")
     val type = enumeration<FilmType>("type")
-    val xpro = bool("xpro")
-    val expired = bool("expired")
 }
 
 class FilmEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -47,8 +45,6 @@ class FilmEntity(id: EntityID<Int>) : IntEntity(id) {
     var filmName by Films.filmName
     var iso by Films.iso
     var type by Films.type
-    var xpro by Films.xpro
-    var expired by Films.expired
     val rolls by RollEntity referrersOn Rolls.film
 }
 
@@ -58,6 +54,8 @@ object Rolls : IntIdTable() {
     val title = varchar("title", 255)
     val path = varchar("path", 255)
     val film = reference("film", Films)
+    val xpro = bool("xpro")
+    val expired = bool("expired")
     val nonxa = bool("nonXA")
 }
 
@@ -67,6 +65,8 @@ class RollEntity(id: EntityID<Int>) : IntEntity(id) {
     var title by Rolls.title
     var path by Rolls.path
     var film by FilmEntity referencedOn Rolls.film
+    var xpro by Rolls.xpro
+    var expired by Rolls.expired
     var nonXa by Rolls.nonxa
     val frames by PicEntity referrersOn Pics.roll
 }

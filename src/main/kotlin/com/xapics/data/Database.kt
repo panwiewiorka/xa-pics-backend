@@ -1,6 +1,5 @@
 package com.xapics.data
 
-import com.xapics.data.models.BASE_URL
 import com.xapics.data.models.FilmType
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -28,69 +27,71 @@ object DatabaseFactory {
             FilmEntity.all().forEach{ it.delete() }
             PicEntity.all().forEach{ it.delete() }
             RollEntity.all().forEach{ it.delete() }
+            UserEntity.all().forEach{ it.delete() }
+            CollectionEntity.all().forEach{ it.delete() }
 
             val aeroFilm = FilmEntity.new {
                 filmName = "Aerocolor"
                 iso = 125
                 type = FilmType.NEGATIVE
-                xpro = false
-                expired = false
             }
             val ektaFilm = FilmEntity.new {
                 filmName = "Ektachrome"
                 iso = 100
                 type = FilmType.SLIDE
-                xpro = false
-                expired = false
             }
 
             val ektaRoll = RollEntity.new {
                 index = 1
                 title = "Ekta"
+                path = "/rolls/01-Ektachrome-Ekta"
                 film = ektaFilm
-                path = "$BASE_URL/rolls/01-Ektachrome-Ekta"//"$BASE_URL/pics/09ektachrome"
+                xpro = false
+                expired = false
                 nonXa = false
             }
             val aeroRoll = RollEntity.new {
                 index = 2
                 title = "Aero"
+                path = "/rolls/02-Aerocolor-Aero"
                 film = aeroFilm
-                path = "$BASE_URL/rolls/02-Aerocolor-Aero"//"$BASE_URL/pics/01aerocolor"
+                xpro = false
+                expired = false
                 nonXa = false
             }
 
             PicEntity.new {
                 year = 2023
                 description = "House gate"
-                imageUrl = "$BASE_URL/pics/09ektachrome/01.jpg"
+                imageUrl = "/pics/09ektachrome/01.jpg"
                 tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Bench, house"
-                imageUrl = "$BASE_URL/pics/09ektachrome/02.jpg"
+                imageUrl = "/pics/09ektachrome/02.jpg"
                 tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Girls"
-                imageUrl = "$BASE_URL/pics/09ektachrome/03.jpg"
+                imageUrl = "/pics/09ektachrome/03.jpg"
                 tags = "Caucasus, people"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Junk"
-                imageUrl = "$BASE_URL/pics/09ektachrome/04.jpg"
+                imageUrl = "/pics/09ektachrome/04.jpg"
                 tags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Curtain"
-                imageUrl = "$BASE_URL/pics/09ektachrome/05.jpg"
+                imageUrl = "/pics/09ektachrome/05.jpg"
                 tags = "Caucasus"
                 roll = ektaRoll
             }
@@ -98,35 +99,35 @@ object DatabaseFactory {
             PicEntity.new {
                 year = 2020
                 description = "Sunset river, city"
-                imageUrl = "$BASE_URL/pics/01aerocolor/01.jpg"
+                imageUrl = "/pics/01aerocolor/01.jpg"
                 tags = "Poland, city"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "Man on a wheelchair"
-                imageUrl = "$BASE_URL/pics/01aerocolor/02.jpg"
+                imageUrl = "/pics/01aerocolor/02.jpg"
                 tags = "Poland, people, night"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "People in lecture room"
-                imageUrl = "$BASE_URL/pics/01aerocolor/03.jpg"
+                imageUrl = "/pics/01aerocolor/03.jpg"
                 tags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "Music concert in lecture room"
-                imageUrl = "$BASE_URL/pics/01aerocolor/04.jpg"
+                imageUrl = "/pics/01aerocolor/04.jpg"
                 tags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Self-portrait"
-                imageUrl = "$BASE_URL/pics/01aerocolor/05.jpg"
+                imageUrl = "/pics/01aerocolor/05.jpg"
                 tags = "Poland, people, self-portrait"
                 roll = aeroRoll
             }

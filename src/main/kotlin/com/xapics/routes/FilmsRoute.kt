@@ -39,8 +39,6 @@ fun Route.films(
                         "BW" -> BW
                         else -> NULL
                     }
-                    xpro = film["xpro"] == "true"
-                    expired = film["expired"] == "true"
                 }
             } else {
                 val filmToEdit = FilmEntity.find { Films.filmName eq (film["filmName"] ?: "nullFilm") }.first()
@@ -51,8 +49,6 @@ fun Route.films(
                     "BW" -> BW
                     else -> NULL
                 }
-                filmToEdit.xpro = film["xpro"] == "true"
-                filmToEdit.expired = film["expired"] == "true"
             }
         }
         call.respond(HttpStatusCode.OK)

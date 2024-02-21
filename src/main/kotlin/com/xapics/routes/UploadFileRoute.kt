@@ -45,7 +45,7 @@ fun Route.uploadFile() {
                                 PicEntity.new {
                                     year = 2023
                                     description = "House gate"
-                                    imageUrl = "$BASE_URL/images/$filePath$fileName"
+                                    imageUrl = "/images/$filePath$fileName"
                                     roll = theRoll
                                 }
                             }

@@ -19,6 +19,7 @@ fun Application.configureRouting(
     hashingService: HashingService,
     tokenService: TokenService,
     tokenConfig: TokenConfig,
+    baseUrl: String,
 ) {
     routing {
         get("/") {
@@ -32,14 +33,14 @@ fun Application.configureRouting(
 
         val picsDao by inject<PicsDao>()
 
-        picsList(picsDao)
+        picsList(picsDao, baseUrl)
+        search(picsDao, baseUrl)
         films(picsDao)
-        rolls(picsDao)
-        rollThumbs(picsDao)
-        collections(picsDao)
+        rolls(picsDao, baseUrl)
+        collections(picsDao, baseUrl)
+        randomPic(picsDao, baseUrl)
+        tags(picsDao)
         uploadFile()
-//        listOfPics()
-//        randomPic()
         staticResources("", "static") // TODO remotePath = "/pics" ?
     }
 }

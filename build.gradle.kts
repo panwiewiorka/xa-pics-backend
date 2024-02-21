@@ -55,5 +55,5 @@ dependencies {
     //Koin
     implementation ("io.insert-koin:koin-ktor:3.2.0")
     // SLF4J Logger
-    implementation ("io.insert-koin:koin-logger-slf4j:3.2.0")
+    implementation ("io.insert-koin:koin-logger-slf4j:3.5.3")
 }

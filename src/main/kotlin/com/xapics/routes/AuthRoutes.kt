@@ -3,6 +3,7 @@ package com.xapics.routes
 import com.xapics.data.UserDataSource
 import com.xapics.data.models.AuthRequest
 import com.xapics.data.models.AuthResponse
+import com.xapics.data.models.TheString
 import com.xapics.data.models.User
 import com.xapics.data.security.hashing.HashingService
 import com.xapics.data.security.hashing.SaltedHash
@@ -16,7 +17,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.apache.commons.codec.digest.DigestUtils
+import org.slf4j.LoggerFactory
 
 fun Route.signUp(
     hashingService: HashingService,
@@ -24,14 +25,18 @@ fun Route.signUp(
 ) {
     post("signup") {
         val request = call.receiveOrNull<AuthRequest>() ?: kotlin.run {
-            call.respond(HttpStatusCode.BadRequest, "err1")
+            call.respond(HttpStatusCode.BadRequest)
             return@post
         }
 
         val areFieldsBlank = request.username.isBlank() || request.password.isBlank()
-        val isPwTooShort = request.password.length < 8
-        if(areFieldsBlank || isPwTooShort) {
-            call.respond(HttpStatusCode.Conflict, "err2") // TODO add errors here and elsewhere
+        if(areFieldsBlank) {
+            call.respond(HttpStatusCode.Conflict, "Please fill in the fields")
+            return@post
+        }
+        val isPwTooShort = request.password.length < 6
+        if(isPwTooShort) {
+            call.respond(HttpStatusCode.Conflict, "Password is too short (< 6 symbols)")
             return@post
         }
 
@@ -45,7 +50,7 @@ fun Route.signUp(
         val wasAcknowledged = userDataSource.insertUser(user)
 
         if(!wasAcknowledged)  {
-            call.respond(HttpStatusCode.Conflict, "err3")
+            call.respond(HttpStatusCode.Conflict, "This username is already taken")
             return@post
         }
 
@@ -62,13 +67,13 @@ fun Route.signIn(
 ) {
     post("signin") {
         val request = call.receiveOrNull<AuthRequest>() ?: kotlin.run {
-            call.respond(HttpStatusCode.BadRequest, "err4")
+            call.respond(HttpStatusCode.BadRequest)
             return@post
         }
 
         val user = userDataSource.getUserByUsername(request.username)
         if(user == null) {
-            call.respond(HttpStatusCode.Conflict, "No such user")
+            call.respond(HttpStatusCode.Conflict, "Incorrect username or password")
             return@post
         }
 
@@ -80,7 +85,6 @@ fun Route.signIn(
             )
         )
         if(!isValidPassword) {
-            println("Entered hash: ${DigestUtils.sha256Hex("${user.salt}${request.password}")}, Hashed PW: ${user.password}")
             call.respond(HttpStatusCode.Conflict, "Incorrect username or password")
             return@post
         }
@@ -90,13 +94,18 @@ fun Route.signIn(
             TokenClaim(
                 name = "userId",
                 value = user.id.toString()
+            ),
+            TokenClaim(
+                name = "userName",
+                value = user.username
             )
         )
 
         call.respond(
             status = HttpStatusCode.OK,
             message = AuthResponse(
-                token = token
+                token = token,
+                userId = user.username
             )
         )
     }
@@ -111,11 +120,14 @@ fun Route.authenticate() {
 }
 
 fun Route.getUserInfo() {
+    val log = LoggerFactory.getLogger(this.javaClass)
     authenticate {
         get("profile") {
             val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.getClaim("userId", String::class)
-            call.respond(HttpStatusCode.OK, "$userId")
+            val userName = principal?.getClaim("userName", String::class)
+            log.debug("Route.getUserInfo(): userName = $userName")
+            call.respond(status = HttpStatusCode.OK, message = TheString(userName.toString()))
+            // text userNames in regular String were crashing frontend request (but Strings like "111" weren't)
         }
     }
 }
