@@ -7,7 +7,7 @@ const val BASE_URL = "http://192.168.0.87:8080"
 
 @Serializable
 data class TheString(
-    val text: String
+    val string: String
 )
 
 @Serializable
@@ -50,17 +50,9 @@ data class Roll(
 @Serializable
 data class Pic(
     val id: Int,
-    val year: Int,
-    val description: String,
     val imageUrl: String,
-    val tags: String,
-    val film: String,
-    val filmType: FilmType,
-    val iso: Int,
-    val expired: Boolean,
-    val xpro: Boolean,
-    val nonXa: Boolean,
-//    val collections: String? = null,
+    val description: String,
+    val tags: String
 )
 
 @Serializable
@@ -70,3 +62,8 @@ data class Thumb(
 )
 
 enum class FilmType { SLIDE, NEGATIVE, BW, NULL }
+
+data class Tag(
+    val type: String,
+    val value: String
+)

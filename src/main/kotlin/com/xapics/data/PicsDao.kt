@@ -6,7 +6,8 @@ import com.xapics.data.models.Pic
 import com.xapics.data.models.Roll
 
 interface PicsDao {
-    suspend fun getPicsList(year: Int?, roll: String?, tag: String?, film: String?, description: String?, baseUrl: String): List<Pic>
+    suspend fun getPicsList(theQuery: String, baseUrl: String): List<Pic>
+//    suspend fun getPicsList(year: Int?, roll: String?, tag: String?, film: String?, description: String?, baseUrl: String): List<Pic>
     suspend fun getSearchResponse(searchQuery: String, baseUrl: String): List<Pic>
     suspend fun getFilmsList(): List<Film>
     suspend fun getRollsList(): List<Roll>
@@ -17,5 +18,5 @@ interface PicsDao {
     suspend fun getCollection(userId: Int, collection: String, baseUrl: String): List<Pic>
     suspend fun getPicCollections(userId: Int, picId: Int): List<String>
     suspend fun getRandomPic(baseUrl: String): Pic
-    suspend fun getAllTags(): List<List<String>>
+    suspend fun getAllTags(): String
 }

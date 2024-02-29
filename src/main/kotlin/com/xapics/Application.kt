@@ -8,6 +8,7 @@ import com.xapics.data.security.token.TokenConfig
 import com.xapics.plugins.*
 import io.ktor.server.application.*
 import org.koin.ktor.ext.inject
+import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.days
 
 fun main(args: Array<String>) {
@@ -15,7 +16,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val baseUrl = environment.config.property("jwt.domain").getString()
+    val baseUrl = environment.config.property("jwt.baseurl").getString()
+//    val baseUrl = environment.config.property("jwt.domain").getString()  // TODO remove domain ?
 
     DatabaseFactory.init()
 
@@ -34,5 +36,11 @@ fun Application.module() {
     configureMonitoring()
     configureKoin()
     configureSecurity(tokenConfig)
-    configureRouting(userDataSource, hashingService, tokenService, tokenConfig, baseUrl)
+    configureRouting(
+        userDataSource = userDataSource,
+        hashingService = hashingService,
+        tokenService = tokenService,
+        tokenConfig = tokenConfig,
+        baseUrl = baseUrl
+    )
 }

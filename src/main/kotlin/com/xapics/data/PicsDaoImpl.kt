@@ -2,13 +2,65 @@ package com.xapics.data
 
 import com.xapics.data.DatabaseFactory.dbQuery
 import com.xapics.data.models.*
+import com.xapics.data.models.FilmType.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
 class PicsDaoImpl : PicsDao {
 
-    override suspend fun getPicsList(year: Int?, roll: String?, tag: String?, film: String?, description: String?, baseUrl: String): List<Pic> {
+    override suspend fun getPicsList(theQuery: String, baseUrl: String): List<Pic> {
+        val tags = theQuery
+            .split(", ")
+            .map { it.split(" = ") }
+            .map { Tag(it[0], it[1]) }
+
+        val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
+        tags.forEach { tag ->
+            when(tag.type) {
+                "filmType" -> {
+                    val type = when(tag.value) {
+                        "SLIDE" -> SLIDE
+                        "NEGATIVE" -> NEGATIVE
+                        "BW" -> BW
+                        else -> NULL
+                    }
+                    query.andWhere { Films.type eq type }
+                }
+                "roll" -> { query.andWhere { Rolls.title eq tag.value } }
+                "nonXa" -> { query.andWhere { Rolls.nonxa eq (tag.value == "true") } }
+                "expired" -> { query.andWhere { Rolls.expired eq (tag.value == "true") } }
+                "xpro" -> { query.andWhere { Rolls.xpro eq (tag.value == "true") } }
+                "iso" -> { query.andWhere { Films.iso eq tag.value.toInt() } }
+                "filmName" -> { query.andWhere { Films.filmName eq tag.value } }
+                "year" -> { query.andWhere { Pics.year eq tag.value.toInt() } }
+                "hashtag" -> { query.andWhere { Pics.hashtags like "%${tag.value}%" } }
+                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+            }
+        }
+
+        return dbQuery {
+            query.map { // TODO fun toPic()     (to avoid copyPaste vvvvv)
+                Pic(
+                    it[Pics.id].value,
+                    baseUrl + it[Pics.imageUrl],
+                    it[Pics.description],
+                    listOf(
+                        "year = ${it[Pics.year]}",
+                        "filmName = ${it[Films.filmName]}",
+                        "filmType = ${it[Films.type]}",
+                        "iso = ${it[Films.iso]}",
+                        "expired = ${it[Rolls.expired]}",
+                        "xpro = ${it[Rolls.xpro]}",
+                        "nonXa = ${it[Rolls.nonxa]}",
+                        it[Pics.hashtags].toString().split(',').map { t-> "hashtag = ${t.trim()}" }.sorted().toString().drop(1).dropLast(1)
+                    ).toString().drop(1).dropLast(1)
+                )
+            }
+        }
+    }
+    /*
+override suspend fun getPicsList(year: Int?, roll: String?, tag: String?, film: String?, description: String?, baseUrl: String): List<Pic> {
         val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
         year?.let { query.andWhere { Pics.year eq it } }
         roll?.let { query.andWhere { Rolls.title eq it } }
@@ -35,13 +87,15 @@ class PicsDaoImpl : PicsDao {
         }
     }
 
+     */
+
     override suspend fun getSearchResponse(searchQuery: String, baseUrl: String): List<Pic> {
         val qq = searchQuery.replace(',', ' ').trim().split("\\s+".toRegex())
         val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
         qq.forEach {
             query
                 .orWhere { Pics.description like "%$it%" }
-                .orWhere { Pics.tags like "%$it%" }
+                .orWhere { Pics.hashtags like "%$it%" }
                 .orWhere { Rolls.title like "%$it%" }
                 .orWhere { Films.filmName like "%$it%" }
         }
@@ -50,16 +104,18 @@ class PicsDaoImpl : PicsDao {
             query.distinct().map {
                 Pic(
                     it[Pics.id].value,
-                    it[Pics.year],
-                    it[Pics.description],
                     baseUrl + it[Pics.imageUrl],
-                    it[Pics.tags],
-                    it[Films.filmName],
-                    it[Films.type],
-                    it[Films.iso],
-                    it[Rolls.expired],
-                    it[Rolls.xpro],
-                    it[Rolls.nonxa]
+                    it[Pics.description],
+                    listOf(
+                        "year = ${it[Pics.year]}",
+                        "filmName = ${it[Films.filmName]}",
+                        "filmType = ${it[Films.type]}",
+                        "iso = ${it[Films.iso]}",
+                        "expired = ${it[Rolls.expired]}",
+                        "xpro = ${it[Rolls.xpro]}",
+                        "nonXa = ${it[Rolls.nonxa]}",
+                        it[Pics.hashtags].toString().split(',').map { t-> "tag = ${t.trim()}" }.sorted().toString().drop(1).dropLast(1),
+                    ).toString()
                 )
             }
         }
@@ -165,22 +221,37 @@ class PicsDaoImpl : PicsDao {
 
         return dbQuery {
             query.map {
-                transaction {
-                    val pic = PicEntity.findById(it[Collections.pic]) // TODO null-check
-                    Pic(
-                        pic!!.id.value,
-                        pic.year,
-                        pic.description,
-                        baseUrl + pic.imageUrl,
-                        pic.tags,
-                        pic.roll.film.filmName,
-                        pic.roll.film.type,
-                        pic.roll.film.iso,
-                        pic.roll.expired,
-                        pic.roll.xpro,
-                        pic.roll.nonXa
-                    )
-                }
+                Pic(
+                    it[Pics.id].value,
+                    baseUrl + it[Pics.imageUrl],
+                    it[Pics.description],
+                    listOf(
+                        "year = ${it[Pics.year]}",
+                        "filmName = ${it[Films.filmName]}",
+                        "filmType = ${it[Films.type]}",
+                        "iso = ${it[Films.iso]}",
+                        "expired = ${it[Rolls.expired]}",
+                        "xpro = ${it[Rolls.xpro]}",
+                        "nonXa = ${it[Rolls.nonxa]}",
+                        it[Pics.hashtags].toString().split(',').map { t-> "tag = ${t.trim()}" }.sorted().toString().drop(1).dropLast(1),
+                    ).toString()
+                )
+//                transaction {
+//                    val pic = PicEntity.findById(it[Collections.pic]) // TODO null-check
+//                    Pic(
+//                        pic!!.id.value,
+//                        pic.year,
+//                        pic.description,
+//                        baseUrl + pic.imageUrl,
+//                        pic.tags,
+//                        pic.roll.film.filmName,
+//                        pic.roll.film.type,
+//                        pic.roll.film.iso,
+//                        pic.roll.expired,
+//                        pic.roll.xpro,
+//                        pic.roll.nonXa
+//                    )
+//                }
             }
         }
     }
@@ -204,21 +275,25 @@ class PicsDaoImpl : PicsDao {
             log.debug("Pic url = ${pic[Pics.imageUrl]}")
             Pic(
                 pic[Pics.id].value,
-                pic[Pics.year],
-                pic[Pics.description],
                 baseUrl + pic[Pics.imageUrl],
-                pic[Pics.tags],
-                pic[Films.filmName],
-                pic[Films.type],
-                pic[Films.iso],
-                pic[Rolls.expired],
-                pic[Rolls.xpro],
-                pic[Rolls.nonxa]
+                pic[Pics.description],
+                ""
+//                pic[Pics.id].value,
+//                pic[Pics.year],
+//                pic[Pics.description],
+//                baseUrl + pic[Pics.imageUrl],
+//                pic[Pics.tags],
+//                pic[Films.filmName],
+//                pic[Films.type],
+//                pic[Films.iso],
+//                pic[Rolls.expired],
+//                pic[Rolls.xpro],
+//                pic[Rolls.nonxa]
             )
         }
     }
 
-    override suspend fun getAllTags(): List<List<String>> {
+    override suspend fun getAllTags(): String {
         val log = LoggerFactory.getLogger(this.javaClass)
         val filmsQuery = Films.selectAll()
         val picsQuery = Pics.selectAll()
@@ -226,31 +301,33 @@ class PicsDaoImpl : PicsDao {
             val filmsList = filmsQuery.toList()
 
             val filmNames = filmsList.map {
-                it[Films.filmName]
+                "filmName = ${it[Films.filmName]}"
             }.sorted()
-            log.debug("filmss = {}", filmNames)
+//            log.debug("filmss = $filmNames")
 
             val types = filmsList.map {
-                it[Films.type].toString().lowercase()
+                "filmType = ${it[Films.type]}"
             }.distinct().sorted()
 
             val iso = filmsList.map {
-                "iso ${it[Films.iso]}"
+                "iso = ${it[Films.iso]}"
             }.distinct().sorted()
+
+            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true")
 
             val picsList = picsQuery.toList()
 
             val years = picsList.map {
-                it[Pics.year].toString()
+                "year = ${it[Pics.year]}"//.toString()
             }.distinct().sorted()
 
-            val tags = picsList.map {
-                it[Pics.tags].toString().split(',')
+            val hashtags = picsList.map { row ->
+                row[Pics.hashtags].toString().split(',').map { "hashtag = ${it.trim()}" }
             }.flatten().distinct().sorted()
 
             listOf(
-                types, filmNames, iso, years, tags
-            )
+                types, rollAttributes, filmNames, iso, years, hashtags
+            ).flatten().toString().drop(1).dropLast(1)
         }
     }
 

@@ -5,6 +5,7 @@ import com.xapics.data.UserDataSource
 import com.xapics.data.security.hashing.HashingService
 import com.xapics.data.security.token.TokenConfig
 import com.xapics.data.security.token.TokenService
+import com.xapics.module
 import com.xapics.routes.*
 import com.xapics.routes.uploadFile
 import io.ktor.server.application.*
@@ -12,6 +13,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import org.slf4j.LoggerFactory
 
 
 fun Application.configureRouting(
@@ -42,5 +44,8 @@ fun Application.configureRouting(
         tags(picsDao)
         uploadFile()
         staticResources("", "static") // TODO remotePath = "/pics" ?
+
+        val log = LoggerFactory.getLogger(this.javaClass)
+        log.debug("baseUrl1 = $baseUrl")
     }
 }

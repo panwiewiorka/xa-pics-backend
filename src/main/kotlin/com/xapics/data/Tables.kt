@@ -76,7 +76,7 @@ object Pics : IntIdTable() {
     val year = integer("year")
     val description = varchar("description", 255)
     val imageUrl = varchar("imageUrl", 255)
-    val tags = varchar("tags", 255)
+    val hashtags = varchar("hashtags", 255)
     val roll = reference("roll", Rolls)
 }
 
@@ -85,6 +85,6 @@ class PicEntity(id: EntityID<Int>) : IntEntity(id) {
     var year by Pics.year
     var description by Pics.description
     var imageUrl by Pics.imageUrl
-    var tags by Pics.tags
+    var hashtags by Pics.hashtags
     var roll by RollEntity referencedOn Pics.roll
 }

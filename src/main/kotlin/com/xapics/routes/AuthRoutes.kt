@@ -126,8 +126,11 @@ fun Route.getUserInfo() {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
             log.debug("Route.getUserInfo(): userName = $userName")
-            call.respond(status = HttpStatusCode.OK, message = TheString(userName.toString()))
-            // text userNames in regular String were crashing frontend request (but Strings like "111" weren't)
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = TheString(userName.toString())
+            )
+            // Introduced TheString due to text userNames in regular String crashing frontend (but Strings like "111" weren't)
         }
     }
 }

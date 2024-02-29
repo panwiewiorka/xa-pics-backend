@@ -1,6 +1,7 @@
 package com.xapics.routes
 
 import com.xapics.data.PicsDao
+import com.xapics.data.models.TheString
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -10,9 +11,11 @@ fun Route.tags(
     picsDao: PicsDao,
 ) {
     get("tags") {
+        val message = picsDao.getAllTags()
         call.respond(
-            HttpStatusCode.OK,
-            picsDao.getAllTags()
+            status = HttpStatusCode.OK,
+            message = TheString(message)
+//            message = TheString(message)
         )
     }
 }

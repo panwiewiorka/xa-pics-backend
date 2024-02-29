@@ -64,35 +64,35 @@ object DatabaseFactory {
                 year = 2023
                 description = "House gate"
                 imageUrl = "/pics/09ektachrome/01.jpg"
-                tags = "Caucasus"
+                hashtags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Bench, house"
                 imageUrl = "/pics/09ektachrome/02.jpg"
-                tags = "Caucasus"
+                hashtags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Girls"
                 imageUrl = "/pics/09ektachrome/03.jpg"
-                tags = "Caucasus, people"
+                hashtags = "Caucasus, people"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2020
                 description = "Junk"
                 imageUrl = "/pics/09ektachrome/04.jpg"
-                tags = "Caucasus"
+                hashtags = "Caucasus"
                 roll = ektaRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Curtain"
                 imageUrl = "/pics/09ektachrome/05.jpg"
-                tags = "Caucasus"
+                hashtags = "Caucasus"
                 roll = ektaRoll
             }
 
@@ -100,35 +100,35 @@ object DatabaseFactory {
                 year = 2020
                 description = "Sunset river, city"
                 imageUrl = "/pics/01aerocolor/01.jpg"
-                tags = "Poland, city"
+                hashtags = "Poland, city"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "Man on a wheelchair"
                 imageUrl = "/pics/01aerocolor/02.jpg"
-                tags = "Poland, people, night"
+                hashtags = "Poland, people, night"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "People in lecture room"
                 imageUrl = "/pics/01aerocolor/03.jpg"
-                tags = "Poland, people"
+                hashtags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2023
                 description = "Music concert in lecture room"
                 imageUrl = "/pics/01aerocolor/04.jpg"
-                tags = "Poland, people"
+                hashtags = "Poland, people"
                 roll = aeroRoll
             }
             PicEntity.new {
                 year = 2021
                 description = "Self-portrait"
                 imageUrl = "/pics/01aerocolor/05.jpg"
-                tags = "Poland, people, self-portrait"
+                hashtags = "Poland, people, self-portrait"
                 roll = aeroRoll
             }
         }
