@@ -12,12 +12,11 @@ import org.slf4j.LoggerFactory
 
 fun Route.rolls(
     picsDao: PicsDao,
-    baseUrl: String
 ) {
     get("rollthumbs") {
         call.respond(
             HttpStatusCode.OK,
-            picsDao.getRollThumbs(baseUrl)
+            picsDao.getRollThumbs()
         )
     }
 

@@ -8,7 +8,6 @@ import io.ktor.server.routing.*
 
 fun Route.search(
     picsDao: PicsDao,
-    baseUrl: String
 ) {
     get("search") {
         val searchQuery = call.request.queryParameters["query"]
@@ -20,7 +19,7 @@ fun Route.search(
         } else {
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getSearchResponse(searchQuery, baseUrl)
+                picsDao.getSearchResponse(searchQuery)
             )
         }
     }

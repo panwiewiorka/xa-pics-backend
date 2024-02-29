@@ -8,12 +8,11 @@ import io.ktor.server.routing.*
 
 fun Route.randomPic(
     picsDao: PicsDao,
-    baseUrl: String
 ) {
     get("randompic") {
         call.respond(
             HttpStatusCode.OK,
-            picsDao.getRandomPic(baseUrl)
+            picsDao.getRandomPic()
         )
     }
 }

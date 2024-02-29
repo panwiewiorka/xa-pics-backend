@@ -8,7 +8,6 @@ import io.ktor.server.routing.*
 
 fun Route.picsList(
     picsDao: PicsDao,
-    baseUrl: String
 ) {
     get("picslist") {
         val query = call.request.queryParameters["query"]
@@ -20,29 +19,8 @@ fun Route.picsList(
         } else {
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getPicsList(query, baseUrl)
+                picsDao.getPicsList(query)
             )
         }
-
-        /*
-val year = call.request.queryParameters["year"]?.toInt()
-val roll = call.request.queryParameters["roll"]
-val tag = call.request.queryParameters["tag"]
-val film = call.request.queryParameters["film"]
-val description = call.request.queryParameters["description"]
-
-if (year == null && roll.isNullOrBlank() && tag.isNullOrBlank() && film.isNullOrBlank() && description.isNullOrBlank()) {
-    call.respond(
-        HttpStatusCode.BadRequest
-//                HttpStatusCode.OK,
-//                listOf(FilmPic(0, 0, "NULL", "$BASE_URL/pics/null.jpg", "", ""))
-    )
-} else {
-    call.respond(
-        HttpStatusCode.OK,
-        picsDao.getPicsList(year, roll, tag, film, description, baseUrl)
-    )
-}
- */
     }
 }

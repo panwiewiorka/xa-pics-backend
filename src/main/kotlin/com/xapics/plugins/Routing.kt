@@ -21,7 +21,6 @@ fun Application.configureRouting(
     hashingService: HashingService,
     tokenService: TokenService,
     tokenConfig: TokenConfig,
-    baseUrl: String,
 ) {
     routing {
         get("/") {
@@ -35,17 +34,14 @@ fun Application.configureRouting(
 
         val picsDao by inject<PicsDao>()
 
-        picsList(picsDao, baseUrl)
-        search(picsDao, baseUrl)
+        picsList(picsDao)
+        search(picsDao)
         films(picsDao)
-        rolls(picsDao, baseUrl)
-        collections(picsDao, baseUrl)
-        randomPic(picsDao, baseUrl)
+        rolls(picsDao)
+        collections(picsDao)
+        randomPic(picsDao)
         tags(picsDao)
         uploadFile()
         staticResources("", "static") // TODO remotePath = "/pics" ?
-
-        val log = LoggerFactory.getLogger(this.javaClass)
-        log.debug("baseUrl1 = $baseUrl")
     }
 }

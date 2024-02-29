@@ -10,7 +10,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.slf4j.LoggerFactory
 
-fun Route.collections(picsDao: PicsDao, baseUrl: String) {
+fun Route.collections(
+    picsDao: PicsDao
+) {
     authenticate {
 
         val log = LoggerFactory.getLogger(this.javaClass)
@@ -33,7 +35,7 @@ fun Route.collections(picsDao: PicsDao, baseUrl: String) {
             log.debug("userIDff = $userId")
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getAllCollections(userId!!, baseUrl)
+                picsDao.getAllCollections(userId!!)
             )
         }
 
@@ -43,7 +45,7 @@ fun Route.collections(picsDao: PicsDao, baseUrl: String) {
             val collection = call.request.queryParameters["collection"]
             call.respond(
                 HttpStatusCode.OK,
-                picsDao.getCollection(userId!!, collection!!, baseUrl)
+                picsDao.getCollection(userId!!, collection!!)
             )
         }
 

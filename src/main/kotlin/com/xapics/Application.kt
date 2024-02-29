@@ -16,8 +16,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val baseUrl = environment.config.property("jwt.baseurl").getString()
-//    val baseUrl = environment.config.property("jwt.domain").getString()  // TODO remove domain ?
 
     DatabaseFactory.init()
 
@@ -41,6 +39,5 @@ fun Application.module() {
         hashingService = hashingService,
         tokenService = tokenService,
         tokenConfig = tokenConfig,
-        baseUrl = baseUrl
     )
 }
