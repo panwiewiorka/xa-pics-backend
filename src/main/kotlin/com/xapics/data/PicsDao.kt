@@ -18,4 +18,5 @@ interface PicsDao {
     suspend fun getPicCollections(userId: Int, picId: Int): List<String>
     suspend fun getRandomPic(): Pic
     suspend fun getAllTags(): String
+    suspend fun getFilteredTags(theQuery: String): String
 }

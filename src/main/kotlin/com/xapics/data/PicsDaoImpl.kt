@@ -53,7 +53,7 @@ class PicsDaoImpl : PicsDao {
                 "filmName" -> { query.andWhere { Films.filmName eq tag.value } }
                 "year" -> { query.andWhere { Pics.year eq tag.value.toInt() } }
                 "hashtag" -> { query.andWhere { Pics.hashtags like "%${tag.value}%" } }
-                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
             }
         }
 
@@ -242,7 +242,7 @@ class PicsDaoImpl : PicsDao {
                 "iso = ${it[Films.iso]}"
             }.distinct().sorted()
 
-            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true")
+            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true") // TODO move to frontend?
 
             val picsList = picsQuery.toList()
 
@@ -256,6 +256,149 @@ class PicsDaoImpl : PicsDao {
 
             listOf(
                 types, rollAttributes, filmNames, iso, years, hashtags
+            ).flatten().toString().drop(1).dropLast(1)
+        }
+    }
+
+    override suspend fun getFilteredTags(theQuery: String): String {
+        val log = LoggerFactory.getLogger(this.javaClass)
+
+        val tagGroups = theQuery
+            .split(", ")
+            .map { it.split(" = ") }
+            .map { Tag(it[0], it[1]) }.groupBy { it.type }
+
+        val initQuery = (Films innerJoin Rolls innerJoin Pics).selectAll()
+        val query = initQuery
+
+        transaction {
+            var type = ""
+            tagGroups.forEach { group ->
+                val tagValues = group.value.map { it.value }
+                when (group.key) {
+                    "filmType" -> {
+                        val types = tagValues.map {
+                            when (it) {
+                                "SLIDE" -> SLIDE
+                                "NEGATIVE" -> NEGATIVE
+                                "BW" -> BW
+                                else -> NULL
+                            }
+                        }
+                        query.andWhere { Films.type inList types }
+                    }
+                    "roll" -> { query.andWhere { Rolls.title inList tagValues } }
+                    "nonXa" -> { query.andWhere { Rolls.nonxa inList tagValues.map { it == "true" } } }
+                    "expired" -> { query.andWhere { Rolls.expired inList tagValues.map { it == "true" } } }
+                    "xpro" -> { query.andWhere { Rolls.xpro inList tagValues.map { it == "true" } } }
+                    "iso" -> { query.andWhere { Films.iso inList tagValues.map { it.toInt() } } }
+                    "filmName" -> { query.andWhere { Films.filmName inList tagValues } }
+                    "year" -> { query.andWhere { Pics.year inList tagValues.map { it.toInt() } } }
+                    "hashtag" -> {
+                        val exp = tagValues.toString().replace(", ", " OR ").drop(1).dropLast(1) // FIXME OR not working
+                        log.debug("zzz zzz = $exp")
+                        query.andWhere { Pics.hashtags like "%$exp%" }
+//                        query.andWhere { Pics.hashtags regexp "%\\b(?:$exp)\\b%" }
+                    }
+//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+                }
+//                log.debug("zzz key = ${it.key}")
+                /*
+                it.value.forEach { tag ->
+                    if (it.key != type) {
+                        type = it.key
+                        when (tag.type) {
+                            "filmType" -> {
+                                val type = when (tag.value) {
+                                    "SLIDE" -> SLIDE
+                                    "NEGATIVE" -> NEGATIVE
+                                    "BW" -> BW
+                                    else -> NULL
+                                }
+                                query.andWhere { Films.type eq type }
+                            }
+                            "roll" -> { query.andWhere { Rolls.title eq tag.value } }
+                            "nonXa" -> { query.andWhere { Rolls.nonxa eq (tag.value == "true") } }
+                            "expired" -> { query.andWhere { Rolls.expired eq (tag.value == "true") } }
+                            "xpro" -> { query.andWhere { Rolls.xpro eq (tag.value == "true") } }
+                            "iso" -> { query.andWhere { Films.iso eq tag.value.toInt() } }
+                            "filmName" -> { query.andWhere { Films.filmName eq tag.value } }
+                            "year" -> { query.andWhere { Pics.year eq tag.value.toInt() } }
+                            "hashtag" -> { query.andWhere { Pics.hashtags like "%${tag.value}%" } }
+//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+                        }
+                    } else {
+                        when (tag.type) {
+                            "filmType" -> {
+                                val type = when (tag.value) {
+                                    "SLIDE" -> SLIDE
+                                    "NEGATIVE" -> NEGATIVE
+                                    "BW" -> BW
+                                    else -> NULL
+                                }
+                                query.orWhere { Films.type eq type }
+                            }
+                            "roll" -> { query.orWhere { Rolls.title eq tag.value } }
+                            "nonXa" -> { query.orWhere { Rolls.nonxa eq (tag.value == "true") } }
+                            "expired" -> { query.orWhere { Rolls.expired eq (tag.value == "true") } }
+                            "xpro" -> { query.orWhere { Rolls.xpro eq (tag.value == "true") } }
+                            "iso" -> { query.orWhere { Films.iso eq tag.value.toInt() } }
+                            "filmName" -> { query.orWhere { Films.filmName eq tag.value } }
+                            "year" -> { query.orWhere { Pics.year eq tag.value.toInt() } }
+                            "hashtag" -> { query.orWhere { Pics.hashtags like "%${tag.value}%" } }
+//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+                        }
+                    }
+                }
+
+                 */
+            }
+        }
+
+        return dbQuery {
+
+            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true") // TODO move to frontend?
+
+            val picsList = query.toList()
+
+            val films = picsList.map {
+                "filmName = ${it[Films.filmName]}"
+            }.distinct().sorted()
+
+            val types = picsList.map {
+                "filmType = ${it[Films.type]}"
+            }.distinct().sorted()
+
+            val iso = picsList.map {
+                "iso = ${it[Films.iso]}"
+            }.distinct().sorted()
+
+            val expired = picsList.map {
+                "expired = ${it[Rolls.expired]}"
+            }.distinct().sorted()
+
+            val nonxa = picsList.map {
+                "nonXa = ${it[Rolls.nonxa]}"
+            }.distinct().sorted()
+
+            val xpro = picsList.map {
+                "xpro = ${it[Rolls.xpro]}"
+            }.distinct().sorted()
+
+            val years = picsList.map {
+                "year = ${it[Pics.year]}"
+            }.distinct().sorted()
+
+            val hashtags = picsList.map { row ->
+                row[Pics.hashtags].toString().split(',').map { "hashtag = ${it.trim()}" }
+            }.flatten().distinct().sorted()
+
+            log.debug("filmss = ${listOf(
+                types, rollAttributes, iso, films, years, hashtags
+            ).flatten().toString().drop(1).dropLast(1)}")
+
+            listOf(
+                types, expired, xpro, nonxa, iso, films, years, hashtags
             ).flatten().toString().drop(1).dropLast(1)
         }
     }

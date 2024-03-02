@@ -15,7 +15,16 @@ fun Route.tags(
         call.respond(
             status = HttpStatusCode.OK,
             message = TheString(message)
-//            message = TheString(message)
         )
+    }
+
+    get("filteredtags") {
+        val query = call.request.queryParameters["query"]
+
+        val message = picsDao.getFilteredTags(query ?: "")
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = TheString(message)
+            )
     }
 }
