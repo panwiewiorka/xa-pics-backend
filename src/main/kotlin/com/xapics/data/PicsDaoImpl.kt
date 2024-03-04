@@ -65,20 +65,62 @@ class PicsDaoImpl : PicsDao {
     }
 
     override suspend fun getSearchResponse(searchQuery: String): List<Pic> {
-        val qq = searchQuery.replace(',', ' ').trim().split("\\s+".toRegex())
+        val log = LoggerFactory.getLogger(this.javaClass)
+
+        val tagGroups = searchQuery
+            .split(", ")
+            .map { it.split(" = ") }
+            .map { Tag(it[0], it[1]) }.groupBy { it.type }
+
         val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
-        qq.forEach {
-            query
-                .orWhere { Pics.description like "%$it%" }
-                .orWhere { Pics.hashtags like "%$it%" }
-                .orWhere { Rolls.title like "%$it%" }
-                .orWhere { Films.filmName like "%$it%" }
+        val hashTagsQuery = (Films innerJoin Rolls innerJoin Pics).selectAll()
+
+        transaction {
+            tagGroups.forEach { group ->
+                val tagValues = group.value.map { it.value }
+                when (group.key) {
+                    "search" -> {
+                        val searchWords = tagValues.toString().drop(1).dropLast(1).split("\\s+".toRegex())
+                        searchWords.forEach {
+                            query
+                                .orWhere { Pics.description like "%$it%" }
+//                                .orWhere { Pics.hashtags like "%$it%" }
+//                                .orWhere { Rolls.title like "%$it%" }
+//                                .orWhere { Films.filmName like "%$it%" }
+                        }
+                    }
+                    "filmType" -> {
+                        val types = tagValues.map {
+                            when (it) {
+                                "SLIDE" -> SLIDE
+                                "NEGATIVE" -> NEGATIVE
+                                "BW" -> BW
+                                else -> NULL
+                            }
+                        }
+                        query.andWhere { Films.type inList types }
+                    }
+                    "roll" -> { query.andWhere { Rolls.title inList tagValues } }
+                    "nonXa" -> { query.andWhere { Rolls.nonxa inList tagValues.map { it == "true" } } }
+                    "expired" -> { query.andWhere { Rolls.expired inList tagValues.map { it == "true" } } }
+                    "xpro" -> { query.andWhere { Rolls.xpro inList tagValues.map { it == "true" } } }
+                    "iso" -> { query.andWhere { Films.iso inList tagValues.map { it.toInt() } } }
+                    "filmName" -> { query.andWhere { Films.filmName inList tagValues } }
+                    "year" -> { query.andWhere { Pics.year inList tagValues.map { it.toInt() } } }
+                    "hashtag" -> {
+                        val hashtags = tagValues.toString().drop(1).dropLast(1).split(", ")
+                        hashtags.forEach {
+                            hashTagsQuery.orWhere { Pics.hashtags like "%$it%" }
+                        }
+                    }
+                }
+            }
         }
 
         return dbQuery {
-            query.distinct().map {
+            query.intersect(hashTagsQuery).toList().map {
                 it.toPic()
-            }
+            }.distinct()
         }
     }
 
@@ -268,11 +310,10 @@ class PicsDaoImpl : PicsDao {
             .map { it.split(" = ") }
             .map { Tag(it[0], it[1]) }.groupBy { it.type }
 
-        val initQuery = (Films innerJoin Rolls innerJoin Pics).selectAll()
-        val query = initQuery
+        val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
+        val hashTagsQuery = (Films innerJoin Rolls innerJoin Pics).selectAll()
 
         transaction {
-            var type = ""
             tagGroups.forEach { group ->
                 val tagValues = group.value.map { it.value }
                 when (group.key) {
@@ -295,63 +336,12 @@ class PicsDaoImpl : PicsDao {
                     "filmName" -> { query.andWhere { Films.filmName inList tagValues } }
                     "year" -> { query.andWhere { Pics.year inList tagValues.map { it.toInt() } } }
                     "hashtag" -> {
-                        val exp = tagValues.toString().replace(", ", " OR ").drop(1).dropLast(1) // FIXME OR not working
-                        log.debug("zzz zzz = $exp")
-                        query.andWhere { Pics.hashtags like "%$exp%" }
-//                        query.andWhere { Pics.hashtags regexp "%\\b(?:$exp)\\b%" }
-                    }
-//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
-                }
-//                log.debug("zzz key = ${it.key}")
-                /*
-                it.value.forEach { tag ->
-                    if (it.key != type) {
-                        type = it.key
-                        when (tag.type) {
-                            "filmType" -> {
-                                val type = when (tag.value) {
-                                    "SLIDE" -> SLIDE
-                                    "NEGATIVE" -> NEGATIVE
-                                    "BW" -> BW
-                                    else -> NULL
-                                }
-                                query.andWhere { Films.type eq type }
-                            }
-                            "roll" -> { query.andWhere { Rolls.title eq tag.value } }
-                            "nonXa" -> { query.andWhere { Rolls.nonxa eq (tag.value == "true") } }
-                            "expired" -> { query.andWhere { Rolls.expired eq (tag.value == "true") } }
-                            "xpro" -> { query.andWhere { Rolls.xpro eq (tag.value == "true") } }
-                            "iso" -> { query.andWhere { Films.iso eq tag.value.toInt() } }
-                            "filmName" -> { query.andWhere { Films.filmName eq tag.value } }
-                            "year" -> { query.andWhere { Pics.year eq tag.value.toInt() } }
-                            "hashtag" -> { query.andWhere { Pics.hashtags like "%${tag.value}%" } }
-//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
-                        }
-                    } else {
-                        when (tag.type) {
-                            "filmType" -> {
-                                val type = when (tag.value) {
-                                    "SLIDE" -> SLIDE
-                                    "NEGATIVE" -> NEGATIVE
-                                    "BW" -> BW
-                                    else -> NULL
-                                }
-                                query.orWhere { Films.type eq type }
-                            }
-                            "roll" -> { query.orWhere { Rolls.title eq tag.value } }
-                            "nonXa" -> { query.orWhere { Rolls.nonxa eq (tag.value == "true") } }
-                            "expired" -> { query.orWhere { Rolls.expired eq (tag.value == "true") } }
-                            "xpro" -> { query.orWhere { Rolls.xpro eq (tag.value == "true") } }
-                            "iso" -> { query.orWhere { Films.iso eq tag.value.toInt() } }
-                            "filmName" -> { query.orWhere { Films.filmName eq tag.value } }
-                            "year" -> { query.orWhere { Pics.year eq tag.value.toInt() } }
-                            "hashtag" -> { query.orWhere { Pics.hashtags like "%${tag.value}%" } }
-//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
+                        val hashtags = tagValues.toString().drop(1).dropLast(1).split(", ")
+                        hashtags.forEach {
+                            hashTagsQuery.orWhere { Pics.hashtags like "%$it%" }
                         }
                     }
                 }
-
-                 */
             }
         }
 
@@ -359,7 +349,7 @@ class PicsDaoImpl : PicsDao {
 
             val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true") // TODO move to frontend?
 
-            val picsList = query.toList()
+            val picsList = query.intersect(hashTagsQuery).toList()
 
             val films = picsList.map {
                 "filmName = ${it[Films.filmName]}"
