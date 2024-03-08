@@ -6,7 +6,6 @@ import com.xapics.data.models.Pic
 import com.xapics.data.models.Roll
 
 interface PicsDao {
-    suspend fun getPicsList(theQuery: String): List<Pic>
     suspend fun getSearchResponse(searchQuery: String): List<Pic>
     suspend fun getFilmsList(): List<Film>
     suspend fun getRollsList(): List<Roll>

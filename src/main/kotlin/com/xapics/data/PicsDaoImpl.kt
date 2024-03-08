@@ -19,49 +19,13 @@ class PicsDaoImpl : PicsDao {
                 "filmName = ${this[Films.filmName]}",
                 "filmType = ${this[Films.type]}",
                 "iso = ${this[Films.iso]}",
+                "roll = ${this[Rolls.title]}",
                 "expired = ${this[Rolls.expired]}",
                 "xpro = ${this[Rolls.xpro]}",
                 "nonXa = ${this[Rolls.nonxa]}",
                 this[Pics.hashtags].toString().split(',').map { "hashtag = ${it.trim()}" }.sorted().toString().drop(1).dropLast(1)
             ).toString().drop(1).dropLast(1)
         )
-    }
-
-    override suspend fun getPicsList(theQuery: String): List<Pic> {
-        val tags = theQuery
-            .split(", ")
-            .map { it.split(" = ") }
-            .map { Tag(it[0], it[1]) }
-
-        val query = (Films innerJoin Rolls innerJoin Pics).selectAll()
-        tags.forEach { tag ->
-            when(tag.type) {
-                "filmType" -> {
-                    val type = when(tag.value) {
-                        "SLIDE" -> SLIDE
-                        "NEGATIVE" -> NEGATIVE
-                        "BW" -> BW
-                        else -> NULL
-                    }
-                    query.andWhere { Films.type eq type }
-                }
-                "roll" -> { query.andWhere { Rolls.title eq tag.value } }
-                "nonXa" -> { query.andWhere { Rolls.nonxa eq (tag.value == "true") } }
-                "expired" -> { query.andWhere { Rolls.expired eq (tag.value == "true") } }
-                "xpro" -> { query.andWhere { Rolls.xpro eq (tag.value == "true") } }
-                "iso" -> { query.andWhere { Films.iso eq tag.value.toInt() } }
-                "filmName" -> { query.andWhere { Films.filmName eq tag.value } }
-                "year" -> { query.andWhere { Pics.year eq tag.value.toInt() } }
-                "hashtag" -> { query.andWhere { Pics.hashtags like "%${tag.value}%" } }
-//                "search" -> { query.andWhere { Pics.description like "%${tag.value}%" } } // TODO search all? here?
-            }
-        }
-
-        return dbQuery {
-            query.map {
-                it.toPic()
-            }
-        }
     }
 
     override suspend fun getSearchResponse(searchQuery: String): List<Pic> {
@@ -144,6 +108,8 @@ class PicsDaoImpl : PicsDao {
                 Roll(
                     it[Rolls.title],
                     it[Films.filmName],
+                    it[Rolls.expired],
+                    it[Rolls.xpro],
                     it[Rolls.nonxa]
                 )
             }
@@ -153,7 +119,10 @@ class PicsDaoImpl : PicsDao {
     override suspend fun getRollThumbs(): List<Thumb> {
         val query = Rolls.selectAll()
         return dbQuery {
-            query.toList().map {
+            query.filterNot {
+                val rollNumber = it[Rolls.id].value
+                RollEntity[rollNumber].frames.empty()
+            }.toList().map {
                 val rollNumber = it[Rolls.id].value
                 Thumb(
                     RollEntity[rollNumber].title,

@@ -32,7 +32,7 @@ fun Route.rolls(
     post("rolls") {
         val roll = call.receiveParameters()
 //        log.debug("roll title = ${roll["title"]}")
-//        log.debug("roll film = ${roll["film"]}")
+        log.debug("roll xpro = ${roll["xpro"]}")
         transaction {
             val filmEntity = FilmEntity.find { Films.filmName eq (roll["film"] ?: "nullFilm") }.first() // TODO firstOrNull ?
             val rollTitle = roll["title"] ?: "nullRoll" // TODO filter spaces and other special symbols (FOR PATH ONLY)
@@ -46,12 +46,17 @@ fun Route.rolls(
                     title = rollTitle
                     path = "/rolls/$stringIndex-${filmEntity.filmName}-$rollTitle"
                     film = filmEntity
+                    xpro = roll["xpro"] == "true"
+                    expired = roll["expired"] == "true"
                     nonXa = roll["nonXa"] == "true"
                 }
             } else {
                 val rollToEdit = RollEntity.find { Rolls.title eq rollTitle }.first()
+                // TODO how to edit title?
                 rollToEdit.path = "/rolls/${rollToEdit.index}-${filmEntity.filmName}-$rollTitle"
                 rollToEdit.film = filmEntity
+                rollToEdit.xpro = roll["xpro"] == "true"
+                rollToEdit.expired = roll["expired"] == "true"
                 rollToEdit.nonXa = roll["nonXa"] == "true"
             }
         }

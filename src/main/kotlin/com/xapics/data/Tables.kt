@@ -56,7 +56,7 @@ object Rolls : IntIdTable() {
     val film = reference("film", Films)
     val xpro = bool("xpro")
     val expired = bool("expired")
-    val nonxa = bool("nonXA")
+    val nonxa = bool("nonXa")
 }
 
 class RollEntity(id: EntityID<Int>) : IntEntity(id) {

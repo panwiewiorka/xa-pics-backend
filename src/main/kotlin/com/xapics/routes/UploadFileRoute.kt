@@ -29,10 +29,18 @@ fun Route.uploadFile() {
         val multipart = call.receiveMultipart()
         val path = "build/resources/main/static/images/"
         var rollTitle = ""
+        var theDescription = ""
+        var theYear = ""
+        var theHashtags = ""
         multipart.forEachPart { part ->
             when (part) {
                 is PartData.FormItem -> {
-                    if(part.name == "metadataPath") rollTitle = part.value //else fileName = part.value
+                    when (part.name) {
+                        "roll" -> rollTitle = part.value
+                        "description" -> theDescription = part.value
+                        "year" -> theYear = part.value
+                        "hashtags" -> theHashtags = part.value
+                    }
                 }
                 is PartData.FileItem -> {
                     if(part.name == "image") {
@@ -43,9 +51,10 @@ fun Route.uploadFile() {
                                 val fileName = String.format("%02d.jpg", theRoll.frames.count() + 1)
                                 part.save(path + filePath, fileName)
                                 PicEntity.new {
-                                    year = 2023
-                                    description = "House gate"
+                                    year = theYear.toInt()
+                                    description = theDescription
                                     imageUrl = "/images/$filePath$fileName"
+                                    hashtags = theHashtags
                                     roll = theRoll
                                 }
                             }

@@ -24,7 +24,7 @@ fun Application.configureRouting(
 ) {
     routing {
         get("/") {
-            call.respondText("Hello World!") // TODO
+            call.respondText("XA pics") // TODO
         }
 
         signUp(hashingService, userDataSource)
@@ -34,7 +34,6 @@ fun Application.configureRouting(
 
         val picsDao by inject<PicsDao>()
 
-        picsList(picsDao)
         search(picsDao)
         films(picsDao)
         rolls(picsDao)
