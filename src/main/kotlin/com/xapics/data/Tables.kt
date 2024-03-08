@@ -5,6 +5,8 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.kotlin.datetime.CurrentDateTime
+import org.jetbrains.exposed.sql.kotlin.datetime.datetime
 
 object Users: IntIdTable() {
     val username = varchar("username", 50)
@@ -57,6 +59,7 @@ object Rolls : IntIdTable() {
     val xpro = bool("xpro")
     val expired = bool("expired")
     val nonxa = bool("nonXa")
+    val dateCreated = datetime("date_created").defaultExpression(CurrentDateTime)
 }
 
 class RollEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -69,6 +72,7 @@ class RollEntity(id: EntityID<Int>) : IntEntity(id) {
     var expired by Rolls.expired
     var nonXa by Rolls.nonxa
     val frames by PicEntity referrersOn Pics.roll
+    var dateCreated by Rolls.dateCreated
 }
 
 
@@ -78,6 +82,7 @@ object Pics : IntIdTable() {
     val imageUrl = varchar("imageUrl", 255)
     val hashtags = varchar("hashtags", 255)
     val roll = reference("roll", Rolls)
+    val dateCreated = datetime("date_created").defaultExpression(CurrentDateTime)
 }
 
 class PicEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -87,4 +92,5 @@ class PicEntity(id: EntityID<Int>) : IntEntity(id) {
     var imageUrl by Pics.imageUrl
     var hashtags by Pics.hashtags
     var roll by RollEntity referencedOn Pics.roll
+    var dateCreated by Pics.dateCreated
 }

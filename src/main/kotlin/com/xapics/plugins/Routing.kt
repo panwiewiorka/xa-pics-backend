@@ -12,6 +12,7 @@ import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.datetime.LocalDate
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 
@@ -24,6 +25,9 @@ fun Application.configureRouting(
 ) {
     routing {
         get("/") {
+//            val log = LoggerFactory.getLogger(this.javaClass)
+//            log.debug("")
+
             call.respondText("XA pics") // TODO
         }
 
