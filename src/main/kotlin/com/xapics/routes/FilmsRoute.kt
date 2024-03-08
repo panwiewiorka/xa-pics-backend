@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 fun Route.films(
     picsDaoImpl: PicsDao
 ) {
-    get("films") {
+    get("v1/films") {
         call.respond(
             HttpStatusCode.OK,
             picsDaoImpl.getFilmsList()
@@ -28,7 +28,7 @@ fun Route.films(
     val log = LoggerFactory.getLogger(this.javaClass)
 
     authenticate {
-        post("films") {
+        post("v1/films") {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
 

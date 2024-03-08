@@ -29,7 +29,7 @@ fun Route.uploadFile() {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     authenticate {
-        post("file") {
+        post("v1/file") {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
 

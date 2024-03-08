@@ -18,14 +18,14 @@ import org.slf4j.LoggerFactory
 fun Route.rolls(
     picsDao: PicsDao,
 ) {
-    get("rollthumbs") {
+    get("v1/rollthumbs") {
         call.respond(
             HttpStatusCode.OK,
             picsDao.getRollThumbs()
         )
     }
 
-    get("rolls") {
+    get("v1/rolls") {
         call.respond(
             HttpStatusCode.OK,
             picsDao.getRollsList()
@@ -35,7 +35,7 @@ fun Route.rolls(
     val log = LoggerFactory.getLogger(this.javaClass)
 
     authenticate {
-        post("rolls") {
+        post("v1/rolls") {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
 

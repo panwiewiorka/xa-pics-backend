@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 fun Route.search(
     picsDao: PicsDao,
 ) {
-    get("search") {
+    get("v1/search") {
         val searchQuery = call.request.queryParameters["query"]
 
         if (searchQuery.isNullOrBlank()) {

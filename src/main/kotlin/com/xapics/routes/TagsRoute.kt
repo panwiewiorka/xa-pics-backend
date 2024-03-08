@@ -10,7 +10,7 @@ import io.ktor.server.routing.*
 fun Route.tags(
     picsDao: PicsDao,
 ) {
-    get("tags") {
+    get("v1/tags") {
         val message = picsDao.getAllTags()
         call.respond(
             status = HttpStatusCode.OK,
@@ -18,7 +18,7 @@ fun Route.tags(
         )
     }
 
-    get("filteredtags") {
+    get("v1/filteredtags") {
         val query = call.request.queryParameters["query"]
 
         val message = picsDao.getFilteredTags(query ?: "")

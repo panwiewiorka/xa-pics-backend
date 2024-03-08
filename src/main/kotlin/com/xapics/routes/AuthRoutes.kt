@@ -23,7 +23,7 @@ fun Route.signUp(
     hashingService: HashingService,
     userDataSource: UserDataSource
 ) {
-    post("signup") {
+    post("v1/signup") {
         val request = call.receiveOrNull<AuthRequest>() ?: kotlin.run {
             call.respond(HttpStatusCode.BadRequest)
             return@post
@@ -65,7 +65,7 @@ fun Route.signIn(
     tokenService: TokenService,
     tokenConfig: TokenConfig
 ) {
-    post("signin") {
+    post("v1/signin") {
         val request = call.receiveOrNull<AuthRequest>() ?: kotlin.run {
             call.respond(HttpStatusCode.BadRequest)
             return@post
@@ -113,7 +113,7 @@ fun Route.signIn(
 
 fun Route.authenticate() {
     authenticate {
-        get("authenticate") {
+        get("v1/authenticate") {
             call.respond(HttpStatusCode.OK)
         }
     }
@@ -122,7 +122,7 @@ fun Route.authenticate() {
 fun Route.getUserInfo() {
     val log = LoggerFactory.getLogger(this.javaClass)
     authenticate {
-        get("profile") {
+        get("v1/profile") {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
             log.debug("Route.getUserInfo(): userName = $userName")

@@ -17,7 +17,7 @@ fun Route.collections(
 
         val log = LoggerFactory.getLogger(this.javaClass)
 
-        get("pic-collections") {
+        get("v1/pic-collections") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             val picId = call.request.queryParameters["picid"]?.toInt()
@@ -29,7 +29,7 @@ fun Route.collections(
             }
         }
 
-        get("all-collections") {
+        get("v1/all-collections") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             log.debug("userIDff = $userId")
@@ -39,7 +39,7 @@ fun Route.collections(
             )
         }
 
-        get("collection") {
+        get("v1/collection") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             val collection = call.request.queryParameters["collection"]
@@ -49,7 +49,7 @@ fun Route.collections(
             )
         }
 
-        post("collection") {
+        post("v1/collection") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             val parameters = call.receiveParameters()
@@ -57,7 +57,7 @@ fun Route.collections(
             call.respond(HttpStatusCode.Accepted)
         }
 
-        post("rename-delete-collection") {
+        post("v1/rename-delete-collection") {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)?.toInt()
             val parameters = call.receiveParameters()

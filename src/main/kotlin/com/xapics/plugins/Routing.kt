@@ -45,6 +45,6 @@ fun Application.configureRouting(
         randomPic(picsDao)
         tags(picsDao)
         uploadFile()
-        staticResources("", "static") // TODO remotePath = "/pics" ?
+        staticResources("v1", "static") // TODO remotePath = "/pics" ?
     }
 }
