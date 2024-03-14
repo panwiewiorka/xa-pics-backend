@@ -3,8 +3,6 @@ package com.xapics.routes
 import com.xapics.data.PicEntity
 import com.xapics.data.RollEntity
 import com.xapics.data.Rolls
-import com.xapics.data.models.BASE_URL
-import com.xapics.routes.authenticate
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -35,7 +33,9 @@ fun Route.uploadFile() {
 
             if (userName == "admin") {
                 val multipart = call.receiveMultipart()
-                val path = "build/resources/main/static/images/"
+                val path = "volume-v1/files/images/"
+//                val path = "images/"
+//                val path = "build/resources/main/static/images/"
                 var rollTitle = ""
                 var theDescription = ""
                 var theYear = ""
@@ -61,7 +61,8 @@ fun Route.uploadFile() {
                                         PicEntity.new {
                                             year = theYear.toInt()
                                             description = theDescription
-                                            imageUrl = "/images/$filePath$fileName"
+                                            imageUrl = "$filePath$fileName" // instead of here - writing files/images at frontend
+//                                            imageUrl = "/images/$filePath$fileName"
                                             hashtags = theHashtags
                                             roll = theRoll
                                         }

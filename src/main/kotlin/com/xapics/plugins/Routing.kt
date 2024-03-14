@@ -15,6 +15,7 @@ import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDate
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
+import java.io.File
 
 
 fun Application.configureRouting(
@@ -45,6 +46,10 @@ fun Application.configureRouting(
         randomPic(picsDao)
         tags(picsDao)
         uploadFile()
-        staticResources("v1", "static") // TODO remotePath = "/pics" ?
+        staticResources("v1/files/images/pics", "static/pics") // TODO remotePath = "/pics" ?
+        staticFiles("v1/files", File("volume-v1/files"))
+//        staticFiles("v1/images", File("images")) // works locally, not tested remotely
+//        staticFiles("v1/images", File("/build/resources/main/static/images")) // works remotely, not locally
+//        staticFiles("v1/images", File("C:\\Users\\1\\IdeaProjects\\ktor-xapics\\build\\resources\\main\\static\\images")) // works locally
     }
 }

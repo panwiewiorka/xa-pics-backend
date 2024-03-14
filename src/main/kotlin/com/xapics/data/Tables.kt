@@ -54,11 +54,11 @@ class FilmEntity(id: EntityID<Int>) : IntEntity(id) {
 object Rolls : IntIdTable() {
     val index = integer("index").uniqueIndex()
     val title = varchar("title", 255)
-    val path = varchar("path", 255)
+//    val path = varchar("path", 255)
     val film = reference("film", Films)
     val xpro = bool("xpro")
     val expired = bool("expired")
-    val nonxa = bool("nonXa")
+//    val nonxa = bool("nonXa")
     val dateCreated = datetime("date_created").defaultExpression(CurrentDateTime)
 }
 
@@ -66,11 +66,11 @@ class RollEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<RollEntity>(Rolls)
     var index by Rolls.index
     var title by Rolls.title
-    var path by Rolls.path
+//    var path by Rolls.path
     var film by FilmEntity referencedOn Rolls.film
     var xpro by Rolls.xpro
     var expired by Rolls.expired
-    var nonXa by Rolls.nonxa
+//    var nonXa by Rolls.nonxa
     val frames by PicEntity referrersOn Pics.roll
     var dateCreated by Rolls.dateCreated
 }

@@ -2,9 +2,6 @@ package com.xapics.data.models
 
 import kotlinx.serialization.Serializable
 
-const val BASE_URL = "http://192.168.0.87:8080"
-//const val BASE_URL = "http://0.0.0.0:8080"
-
 @Serializable
 data class TheString(
     val string: String
@@ -44,7 +41,7 @@ data class Roll(
 //    val date: Date,
     val expired: Boolean = false,
     val xpro: Boolean = false,
-    val nonXa: Boolean = false,
+//    val nonXa: Boolean = false,
 )
 
 @Serializable

@@ -53,20 +53,20 @@ fun Route.rolls(
                         RollEntity.new {
                             index = rollIndex
                             title = rollTitle
-                            path = "/rolls/$stringIndex-${filmEntity.filmName}-$rollTitle"
+//                            path = "/rolls/$stringIndex-${filmEntity.filmName}-$rollTitle"
                             film = filmEntity
                             xpro = roll["xpro"] == "true"
                             expired = roll["expired"] == "true"
-                            nonXa = roll["nonXa"] == "true"
+//                            nonXa = roll["nonXa"] == "true"
                         }
                     } else {
                         val rollToEdit = RollEntity.find { Rolls.title eq rollTitle }.first()
                         // TODO how to edit title? get roll id?
-                        rollToEdit.path = "/rolls/${rollToEdit.index}-${filmEntity.filmName}-$rollTitle"
+//                        rollToEdit.path = "/rolls/${rollToEdit.index}-${filmEntity.filmName}-$rollTitle"
                         rollToEdit.film = filmEntity
                         rollToEdit.xpro = roll["xpro"] == "true"
                         rollToEdit.expired = roll["expired"] == "true"
-                        rollToEdit.nonXa = roll["nonXa"] == "true"
+//                        rollToEdit.nonXa = roll["nonXa"] == "true"
                     }
                 }
                 call.respond(HttpStatusCode.OK)
