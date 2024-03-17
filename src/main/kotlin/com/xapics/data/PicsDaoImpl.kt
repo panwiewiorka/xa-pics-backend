@@ -3,6 +3,7 @@ package com.xapics.data
 import com.xapics.data.DatabaseFactory.dbQuery
 import com.xapics.data.models.*
 import com.xapics.data.models.FilmType.*
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -369,6 +370,20 @@ class PicsDaoImpl : PicsDao {
                 hashtags
             ).flatten().toString().drop(1).dropLast(1)
         }
+    }
+
+    override suspend fun editPic(picParams: Parameters, picId: Int): Boolean {
+        var success = false
+        transaction {
+            val picEntity = PicEntity.findById(picId)
+            picEntity?.let {
+                it.year = picParams["year"]!!.toInt()
+                it.description = picParams["description"]!!
+                it.hashtags = picParams["hashtags"] ?: ""
+                success = true
+            }
+        }
+        return success
     }
 
 }

@@ -27,19 +27,20 @@ fun Route.uploadFile() {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     authenticate {
-        post("v1/file") {
+        post("v1/upload") {
             val principal = call.principal<JWTPrincipal>()
             val userName = principal?.getClaim("userName", String::class)
 
-            if (userName == "admin") {
+            if (userName != "admin") {
+                call.respond(HttpStatusCode.Forbidden)
+            } else{
                 val multipart = call.receiveMultipart()
                 val path = "volume-v1/files/images/"
-//                val path = "images/"
-//                val path = "build/resources/main/static/images/"
                 var rollTitle = ""
                 var theDescription = ""
                 var theYear = ""
                 var theHashtags = ""
+
                 multipart.forEachPart { part ->
                     when (part) {
                         is PartData.FormItem -> {
@@ -62,7 +63,6 @@ fun Route.uploadFile() {
                                             year = theYear.toInt()
                                             description = theDescription
                                             imageUrl = "$filePath$fileName" // instead of here - writing files/images at frontend
-//                                            imageUrl = "/images/$filePath$fileName"
                                             hashtags = theHashtags
                                             roll = theRoll
                                         }
@@ -74,8 +74,6 @@ fun Route.uploadFile() {
                     }
                 }
                 call.respond(HttpStatusCode.OK)
-            } else {
-                call.respond(HttpStatusCode.Forbidden)
             }
         }
     }

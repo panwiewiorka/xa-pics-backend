@@ -4,6 +4,7 @@ import com.xapics.data.models.Thumb
 import com.xapics.data.models.Film
 import com.xapics.data.models.Pic
 import com.xapics.data.models.Roll
+import io.ktor.http.*
 
 interface PicsDao {
     suspend fun getSearchResponse(searchQuery: String): List<Pic>
@@ -18,4 +19,5 @@ interface PicsDao {
     suspend fun getRandomPic(): Pic
     suspend fun getAllTags(): String
     suspend fun getFilteredTags(theQuery: String): String
+    suspend fun editPic(picParams: Parameters, picId: Int): Boolean
 }

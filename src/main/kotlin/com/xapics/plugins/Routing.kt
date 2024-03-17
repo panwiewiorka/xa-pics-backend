@@ -42,6 +42,7 @@ fun Application.configureRouting(
         search(picsDao)
         films(picsDao)
         rolls(picsDao)
+        pic(picsDao)
         collections(picsDao)
         randomPic(picsDao)
         tags(picsDao)
