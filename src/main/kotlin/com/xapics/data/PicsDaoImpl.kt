@@ -23,7 +23,6 @@ class PicsDaoImpl : PicsDao {
                 "roll = ${this[Rolls.title]}",
                 "expired = ${this[Rolls.expired]}",
                 "xpro = ${this[Rolls.xpro]}",
-//                "nonXa = ${this[Rolls.nonxa]}",
                 this[Pics.hashtags].toString().split(',').map { "hashtag = ${it.trim()}" }.sorted().toString().drop(1).dropLast(1)
             ).toString().drop(1).dropLast(1)
         )
@@ -49,8 +48,8 @@ class PicsDaoImpl : PicsDao {
                         searchWords.forEach {
                             query
                                 .orWhere { Pics.description like "%$it%" }
-//                                .orWhere { Pics.hashtags like "%$it%" }
-//                                .orWhere { Rolls.title like "%$it%" }
+                                .orWhere { Pics.hashtags like "%$it%" }
+                                .orWhere { Rolls.title like "%$it%" }
 //                                .orWhere { Films.filmName like "%$it%" }
                         }
                     }
@@ -66,7 +65,6 @@ class PicsDaoImpl : PicsDao {
                         query.andWhere { Films.type inList types }
                     }
                     "roll" -> { query.andWhere { Rolls.title inList tagValues } }
-//                    "nonXa" -> { query.andWhere { Rolls.nonxa inList tagValues.map { it == "true" } } }
                     "expired" -> { query.andWhere { Rolls.expired inList tagValues.map { it == "true" } } }
                     "xpro" -> { query.andWhere { Rolls.xpro inList tagValues.map { it == "true" } } }
                     "iso" -> { query.andWhere { Films.iso inList tagValues.map { it.toInt() } } }
@@ -111,7 +109,6 @@ class PicsDaoImpl : PicsDao {
                     it[Films.filmName],
                     it[Rolls.expired],
                     it[Rolls.xpro],
-//                    it[Rolls.nonxa]
                 )
             }
         }
@@ -207,7 +204,6 @@ class PicsDaoImpl : PicsDao {
                             "iso = ${pic.roll.film.iso}",
                             "expired = ${pic.roll.expired}",
                             "xpro = ${pic.roll.xpro}",
-//                            "nonXa = ${pic.roll.nonXa}",
                             pic.hashtags.split(',').map { "hashtag = ${it.trim()}" }.sorted().toString().drop(1).dropLast(1),
                         ).toString().drop(1).dropLast(1)
                     )
@@ -244,7 +240,6 @@ class PicsDaoImpl : PicsDao {
             val filmNames = filmsList.map {
                 "filmName = ${it[Films.filmName]}"
             }.sorted()
-//            log.debug("filmss = $filmNames")
 
             val types = filmsList.map {
                 "filmType = ${it[Films.type]}"
@@ -255,7 +250,6 @@ class PicsDaoImpl : PicsDao {
             }.distinct().sorted()
 
             val rollAttributes = listOf("expired = true, expired = false, xpro = true, xpro = false") // TODO move to frontend?
-//            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true")
 
             val picsList = picsQuery.toList()
 
@@ -300,7 +294,6 @@ class PicsDaoImpl : PicsDao {
                         query.andWhere { Films.type inList types }
                     }
                     "roll" -> { query.andWhere { Rolls.title inList tagValues } }
-//                    "nonXa" -> { query.andWhere { Rolls.nonxa inList tagValues.map { it == "true" } } }
                     "expired" -> { query.andWhere { Rolls.expired inList tagValues.map { it == "true" } } }
                     "xpro" -> { query.andWhere { Rolls.xpro inList tagValues.map { it == "true" } } }
                     "iso" -> { query.andWhere { Films.iso inList tagValues.map { it.toInt() } } }
@@ -319,7 +312,6 @@ class PicsDaoImpl : PicsDao {
         return dbQuery {
 
             val rollAttributes = listOf("expired = true, expired = false, xpro = true, xpro = false") // TODO move to frontend?
-//            val rollAttributes = listOf("expired = false, expired = true, xpro = false, xpro = true, nonXa = false, nonXa = true")
 
             val picsList = query.intersect(hashTagsQuery).toList()
 
@@ -338,10 +330,6 @@ class PicsDaoImpl : PicsDao {
             val expired = picsList.map {
                 "expired = ${it[Rolls.expired]}"
             }.distinct().sorted()
-
-//            val nonxa = picsList.map {
-//                "nonXa = ${it[Rolls.nonxa]}"
-//            }.distinct().sorted()
 
             val xpro = picsList.map {
                 "xpro = ${it[Rolls.xpro]}"
@@ -363,7 +351,6 @@ class PicsDaoImpl : PicsDao {
                 types,
                 expired,
                 xpro,
-//                nonxa,
                 iso,
                 films,
                 years,

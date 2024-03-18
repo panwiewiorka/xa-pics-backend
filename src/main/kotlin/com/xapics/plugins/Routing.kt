@@ -47,10 +47,8 @@ fun Application.configureRouting(
         randomPic(picsDao)
         tags(picsDao)
         uploadFile()
-        staticResources("v1/files/images/pics", "static/pics") // TODO remotePath = "/pics" ?
+//        backup()
+        staticResources("v1/files/images/pics", "static/pics")
         staticFiles("v1/files", File("volume-v1/files"))
-//        staticFiles("v1/images", File("images")) // works locally, not tested remotely
-//        staticFiles("v1/images", File("/build/resources/main/static/images")) // works remotely, not locally
-//        staticFiles("v1/images", File("C:\\Users\\1\\IdeaProjects\\ktor-xapics\\build\\resources\\main\\static\\images")) // works locally
     }
 }
