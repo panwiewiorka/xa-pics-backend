@@ -38,6 +38,7 @@ fun Route.uploadFile() {
                 val path = "volume-v1/files/images/"
                 var rollTitle = ""
                 var theDescription = ""
+                var theKeywords = ""
                 var theYear = ""
                 var theHashtags = ""
 
@@ -47,6 +48,7 @@ fun Route.uploadFile() {
                             when (part.name) {
                                 "roll" -> rollTitle = part.value
                                 "description" -> theDescription = part.value
+                                "keywords" -> theKeywords = part.value
                                 "year" -> theYear = part.value
                                 "hashtags" -> theHashtags = part.value
                             }
@@ -62,6 +64,7 @@ fun Route.uploadFile() {
                                         PicEntity.new {
                                             year = theYear.toInt()
                                             description = theDescription
+                                            keywords = theKeywords
                                             imageUrl = "$filePath$fileName" // instead of here - writing files/images at frontend
                                             hashtags = theHashtags
                                             roll = theRoll

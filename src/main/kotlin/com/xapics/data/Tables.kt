@@ -79,6 +79,7 @@ class RollEntity(id: EntityID<Int>) : IntEntity(id) {
 object Pics : IntIdTable() {
     val year = integer("year")
     val description = varchar("description", 255)
+    val keywords = varchar("keywords", 255)
     val imageUrl = varchar("imageUrl", 255)
     val hashtags = varchar("hashtags", 255)
     val roll = reference("roll", Rolls)
@@ -89,6 +90,7 @@ class PicEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<PicEntity>(Pics)
     var year by Pics.year
     var description by Pics.description
+    var keywords by Pics.keywords
     var imageUrl by Pics.imageUrl
     var hashtags by Pics.hashtags
     var roll by RollEntity referencedOn Pics.roll

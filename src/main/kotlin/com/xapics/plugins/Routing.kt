@@ -47,7 +47,7 @@ fun Application.configureRouting(
         randomPic(picsDao)
         tags(picsDao)
         uploadFile()
-//        backup()
+        backup()
         staticResources("v1/files/images/pics", "static/pics")
         staticFiles("v1/files", File("volume-v1/files"))
     }

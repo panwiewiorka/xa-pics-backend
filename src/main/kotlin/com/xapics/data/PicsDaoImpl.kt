@@ -15,6 +15,7 @@ class PicsDaoImpl : PicsDao {
             this[Pics.id].value,
             this[Pics.imageUrl],
             this[Pics.description],
+            this[Pics.keywords],
             listOf(
                 "year = ${this[Pics.year]}",
                 "filmName = ${this[Films.filmName]}",
@@ -46,8 +47,9 @@ class PicsDaoImpl : PicsDao {
                     "search" -> {
                         val searchWords = tagValues.toString().drop(1).dropLast(1).split("\\s+".toRegex())
                         searchWords.forEach {
-                            query
+                            query // TODO vvvv change search to match full words (e.g. to exclude "roof" result from "of" query) (Regex)
                                 .orWhere { Pics.description like "%$it%" }
+                                .orWhere { Pics.keywords like "%$it%" }
                                 .orWhere { Pics.hashtags like "%$it%" }
                                 .orWhere { Rolls.title like "%$it%" }
 //                                .orWhere { Films.filmName like "%$it%" }
@@ -197,6 +199,7 @@ class PicsDaoImpl : PicsDao {
                         pic!!.id.value,
                         pic.imageUrl,
                         pic.description,
+                        pic.keywords,
                         listOf(
                             "year = ${pic.year}",
                             "filmName = ${pic.roll.film.filmName}",
@@ -366,6 +369,7 @@ class PicsDaoImpl : PicsDao {
             picEntity?.let {
                 it.year = picParams["year"]!!.toInt()
                 it.description = picParams["description"]!!
+                it.keywords = picParams["keywords"] ?: ""
                 it.hashtags = picParams["hashtags"] ?: ""
                 success = true
             }
